@@ -25,8 +25,6 @@ module Librarian
         include Librarian::Puppet::Util
 
         def cache!
-          return vendor_checkout! if vendor_cached?
-
           if environment.local?
             raise Error, "Could not find a local copy of #{uri}#{" at #{sha}" unless sha.nil?}."
           end
@@ -36,6 +34,8 @@ module Librarian
           rescue Librarian::Posix::CommandFailure => e
             raise Error, "Could not checkout #{uri}#{" at #{sha}" unless sha.nil?}: #{e}"
           end
+
+          return vendor_checkout! if vendor_cached?
 
           cache_in_vendor(repository.path) if environment.vendor?
         end
